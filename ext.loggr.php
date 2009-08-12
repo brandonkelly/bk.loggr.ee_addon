@@ -6,18 +6,14 @@ if ( ! defined('EXT')) exit('Invalid file request');
 class Loggr {
 
 	var $name           = 'Loggr';
-	var $version        = '0.0.3';
+	var $version        = '0.0.5';
 	var $settings_exist = 'n';
 
 	var $hooks = array(
 		'sessions_start' => array('priority' => '1'),
 		'show_full_control_panel_end' => array('priority' => '99')
 	);
-	var $hooks_changed = '0.0.3';
-
-	var $msgs = array(
-		array('Loggr')
-	);
+	var $hooks_changed = '0.0.5';
 
 	/**
 	 * Activate Extension
@@ -106,36 +102,34 @@ class Loggr {
 			$param = $default;
 	}
 
-	function sessions_start($Session)
-	{
-		global $Loggr;
-		$Loggr = $this;
-	}
-
 	function log()
 	{
-		global $Loggr;
-		$Loggr->msgs[] = func_get_args();
+		global $SESS;
+		if ( ! isset($SESS->cache['loggr'])) $SESS->cache['loggr'] = array();
+		$SESS->cache['loggr'][] = func_get_args();
 	}
 
 	function show_full_control_panel_end($out)
 	{
-		global $Loggr, $DSP;
+		global $SESS, $DSP;
 
 		$this->get_last_call($out, '');
 
-		$out .= '<script type="text/javascript">'.NL;
-		foreach($Loggr->msgs as $msgs)
+		if (isset($SESS->cache['loggr']))
 		{
-			$out .= 'console.log(';
-			foreach($msgs as $i => $msg)
+			$out .= '<script type="text/javascript">'.NL;
+			foreach($SESS->cache['loggr'] as $msgs)
 			{
-				if ($i > 0) $out .= ', ';
-				$out .= json_encode($msg);
+				$out .= 'console.log(';
+				foreach($msgs as $i => $msg)
+				{
+					if ($i > 0) $out .= ', ';
+					$out .= json_encode($msg);
+				}
+				$out .= ');'.NL;
 			}
-			$out .= ');'.NL;
+			$out .= '</script>'.NL;
 		}
-		$out .= '</script>'.NL;
 
 		return $out;
 	}
