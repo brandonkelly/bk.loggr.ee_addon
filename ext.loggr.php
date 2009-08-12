@@ -114,7 +114,8 @@ class Loggr {
 
 	function log()
 	{
-		$this->msgs[] = func_get_args();
+		global $Loggr;
+		$Loggr->msgs[] = func_get_args();
 	}
 
 	function show_full_control_panel_end($out)
