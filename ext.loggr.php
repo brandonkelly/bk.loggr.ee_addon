@@ -127,11 +127,11 @@ class Loggr {
 		$out .= '<script type="text/javascript">'.NL;
 		foreach($Loggr->msgs as $msgs)
 		{
-			$out .= 'console.log('.NL;
+			$out .= 'console.log(';
 			foreach($msgs as $i => $msg)
 			{
-				if ($i > 0) $out .= ','.NL;
-				$out .= '  '.json_encode($msg);
+				if ($i > 0) $out .= ', ';
+				$out .= json_encode($msg);
 			}
 			$out .= ');'.NL;
 		}
